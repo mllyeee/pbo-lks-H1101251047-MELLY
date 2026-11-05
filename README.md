@@ -64,9 +64,9 @@ Buka browser:
 
 ## Screenshot Aplikasi Final
 
-- [Dashboard](pertemuan-07/dashboard.png.png)
-- [Halaman Buku](pertemuan-07/halaman-buku.png.png)
-- [Halaman Kategori](pertemuan-07/halaman-kategori.png.png)
+- [Dashboard](pertemuan-07/dashboard.png)
+- [Halaman Buku](pertemuan-07/halaman-buku.png)
+- [Halaman Kategori](pertemuan-07/halaman-kategori.png)
 
 ## Dokumentasi Pertemuan
 
