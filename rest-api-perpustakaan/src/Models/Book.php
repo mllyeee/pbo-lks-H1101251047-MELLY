@@ -2,29 +2,21 @@
 
 namespace App\Models;
 
+/**
+ * Book — entity buku.
+ * Hanya menyimpan data; TIDAK ada logika bisnis.
+ */
 class Book
 {
-    private int $id;
-    private string $judul;
-    private string $penulis;
-    private int $tahun;
-    private int $stok;
-
     public function __construct(
-        int $id,
-        string $judul,
-        string $penulis,
-        int $tahun,
-        int $stok
-    ) {
-        $this->id = $id;
-        $this->judul = $judul;
-        $this->penulis = $penulis;
-        $this->tahun = $tahun;
-        $this->stok = $stok;
-    }
+        private ?int $id,
+        private string $judul,
+        private string $penulis,
+        private int $tahun,
+        private int $stok
+    ) {}
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -52,11 +44,11 @@ class Book
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'judul' => $this->judul,
+            'id'      => $this->id,
+            'judul'   => $this->judul,
             'penulis' => $this->penulis,
-            'tahun' => $this->tahun,
-            'stok' => $this->stok
+            'tahun'   => $this->tahun,
+            'stok'    => $this->stok,
         ];
     }
 }

@@ -10,7 +10,7 @@ class Connection
 {
     private static ?PDO $instance = null;
 
-    public static function getInstance(): PDO
+    public static function get(): PDO
     {
         if (self::$instance === null) {
             $host = Env::get('DB_HOST', '127.0.0.1');

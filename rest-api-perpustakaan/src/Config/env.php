@@ -2,36 +2,41 @@
 
 namespace App\Config;
 
+/**
+ * Env — loader file .env sederhana
+ * Membaca setiap baris KEY=VALUE, mendukung komentar (#).
+ */
 class Env
 {
-    public static function load(string $path): void
+    private static array $vars = [];
+
+    public static function load(string $file): void
     {
-        if (!file_exists($path)) {
-            throw new \Exception(".env file tidak ditemukan");
+        if (!file_exists($file)) {
+            throw new \RuntimeException("File .env tidak ditemukan: $file");
         }
 
-        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($lines as $line) {
             $line = trim($line);
 
-            if (str_starts_with($line, '#') || !str_contains($line, '=')) {
+            // Lewati komentar
+            if ($line === '' || str_starts_with($line, '#')) {
                 continue;
             }
 
-            [$key, $value] = explode('=', $line, 2);
+            // Pisahkan KEY=VALUE (maksimal 2 bagian)
+            [$key, $value] = array_pad(explode('=', $line, 2), 2, '');
+            $key   = trim($key);
+            $value = trim($value, " \"'");
 
-            $key = trim($key);
-            $value = trim($value);
-            $value = trim($value, "\"'");
-
-            $_ENV[$key] = $value;
-            putenv("$key=$value");
+            self::$vars[$key] = $value;
         }
     }
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        return $_ENV[$key] ?? $default;
+        return self::$vars[$key] ?? $default;
     }
 }

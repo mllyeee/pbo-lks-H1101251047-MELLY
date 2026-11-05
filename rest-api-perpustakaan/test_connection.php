@@ -8,7 +8,7 @@ use App\Database\Connection;
 try {
     Env::load(__DIR__ . '/.env');
 
-    $pdo = Connection::getInstance();
+    $pdo = Connection::get();
 
     echo "Koneksi database berhasil!";
 } catch (Exception $e) {

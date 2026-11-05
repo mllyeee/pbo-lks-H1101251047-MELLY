@@ -8,7 +8,7 @@ use App\Repositories\MySQLBookRepository;
 
 Env::load(__DIR__ . '/.env');
 
-$pdo = Connection::getInstance();
+$pdo = Connection::get();
 $repo = new MySQLBookRepository($pdo);
 
 $books = $repo->findAll();

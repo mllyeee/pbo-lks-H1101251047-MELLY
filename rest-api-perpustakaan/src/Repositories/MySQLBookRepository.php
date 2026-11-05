@@ -6,31 +6,24 @@ use App\Contracts\BookRepositoryInterface;
 use App\Models\Book;
 use PDO;
 
+/**
+ * MySQLBookRepository — implementasi konkret dari BookRepositoryInterface.
+ * Di sini detail teknis (SQL, PDO) boleh muncul.
+ */
 class MySQLBookRepository implements BookRepositoryInterface
 {
-    private PDO $pdo;
-
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function findAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM books");
-        $books = [];
+        $stmt = $this->pdo->query(
+            "SELECT * FROM books ORDER BY id DESC"
+        );
 
-        while ($row = $stmt->fetch()) {
-            $books[] = new Book(
-                (int) $row['id'],
-                $row['judul'],
-                $row['penulis'],
-                (int) $row['tahun'],
-                (int) $row['stok']
-            );
-        }
-
-        return $books;
+        return array_map(
+            fn(array $row) => $this->toModel($row),
+            $stmt->fetchAll()
+        );
     }
 
     public function findById(int $id): ?Book
@@ -38,24 +31,14 @@ class MySQLBookRepository implements BookRepositoryInterface
         $stmt = $this->pdo->prepare(
             "SELECT * FROM books WHERE id = ?"
         );
-        $stmt->execute([$id]);
 
+        $stmt->execute([$id]);
         $row = $stmt->fetch();
 
-        if (!$row) {
-            return null;
-        }
-
-        return new Book(
-            (int) $row['id'],
-            $row['judul'],
-            $row['penulis'],
-            (int) $row['tahun'],
-            (int) $row['stok']
-        );
+        return $row ? $this->toModel($row) : null;
     }
 
-    public function create(array $data): Book
+    public function save(Book $book): int
     {
         $stmt = $this->pdo->prepare(
             "INSERT INTO books (judul, penulis, tahun, stok)
@@ -63,18 +46,16 @@ class MySQLBookRepository implements BookRepositoryInterface
         );
 
         $stmt->execute([
-            $data['judul'],
-            $data['penulis'],
-            $data['tahun'],
-            $data['stok']
+            $book->getJudul(),
+            $book->getPenulis(),
+            $book->getTahun(),
+            $book->getStok(),
         ]);
 
-        return $this->findById(
-            (int) $this->pdo->lastInsertId()
-        );
+        return (int) $this->pdo->lastInsertId();
     }
 
-    public function update(int $id, array $data): ?Book
+    public function update(Book $book): bool
     {
         $stmt = $this->pdo->prepare(
             "UPDATE books
@@ -82,15 +63,13 @@ class MySQLBookRepository implements BookRepositoryInterface
              WHERE id = ?"
         );
 
-        $stmt->execute([
-            $data['judul'],
-            $data['penulis'],
-            $data['tahun'],
-            $data['stok'],
-            $id
+        return $stmt->execute([
+            $book->getJudul(),
+            $book->getPenulis(),
+            $book->getTahun(),
+            $book->getStok(),
+            $book->getId(),
         ]);
-
-        return $this->findById($id);
     }
 
     public function delete(int $id): bool
@@ -99,8 +78,18 @@ class MySQLBookRepository implements BookRepositoryInterface
             "DELETE FROM books WHERE id = ?"
         );
 
-        $stmt->execute([$id]);
+        return $stmt->execute([$id]);
+    }
 
-        return $stmt->rowCount() > 0;
+    /** Hydrate row database menjadi object Book. */
+    private function toModel(array $row): Book
+    {
+        return new Book(
+            (int) $row['id'],
+            $row['judul'],
+            $row['penulis'],
+            (int) $row['tahun'],
+            (int) $row['stok']
+        );
     }
 }
