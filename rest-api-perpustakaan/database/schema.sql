@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS books (
 INSERT INTO books (judul, penulis, tahun, stok) VALUES
 ('Laskar Pelangi', 'Andrea Hirata', 2005, 5),
 ('Bumi Manusia', 'Pramoedya Ananta Toer', 1980, 3);
+
 -- Tabel kategori
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
